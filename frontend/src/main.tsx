@@ -7,7 +7,7 @@ import App from './App';
 const routes = [{ path: '/', element: <App /> }];
 
 const router = createBrowserRouter(routes, {
-  basename: import.meta.env.VITE_BASE_PATH || '/',
+  basename: '/',
 });
 
 createRoot(document.getElementById('root')!).render(
