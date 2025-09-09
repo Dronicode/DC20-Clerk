@@ -4,7 +4,7 @@
 
 ---
 
-## 📦 Project Overview
+## Project Overview
 
 DC20 Clerk is a suite of interactive utilities for players and Game Masters, including:
 
@@ -18,7 +18,7 @@ While a typical VTT (Virtual Table Top) is a full replacement of the in-person t
 
 ---
 
-## 🎯 Project Goals
+## Project Goals
 
 - Learn and apply:
   - Microservices architecture with Go
@@ -33,7 +33,7 @@ While a typical VTT (Virtual Table Top) is a full replacement of the in-person t
 
 ---
 
-## 🚀 MVP Scope
+## MVP Scope
 
 The Minimum Viable Product includes:
 
@@ -51,32 +51,32 @@ The Minimum Viable Product includes:
 
 ---
 
-## 🛣️ Future Roadmap
+## Future Roadmap
 
-- 🔄 Character sheet
+- Character sheet
   - Fully calculated with all character options
   - Level up assistant
   - Inventory manager
   - Version history (rollback to previous levels)
-- ⚔️ Combat/ Encounter assistant
+- Combat/ Encounter assistant
   - Action point tracker
   - Integration for linking to characters and monsters
   - Fully rules-aware interface for performing actions
   - Damage estimation and calculation
   - Effects apply to character sheet automatically
   - True random dice rolls via random.org
-- 📚 Spellbook
+- Spellbook
   - Quick reference to all spells
   - Spell modification interface
-- 👹 Monster Library
+- Monster Library
   - Quick reference to all monsters with search and filters
   - Custom monster builder
-- 🗡️ Armory
+- Armory
   - List of all weapons and items
   - Custom weapon and item builder
-- 📖 Rulebook
+- Rulebook
   - Quick reference with search and filters
-- 🧑‍🤝‍🧑 Party system
+- Party system
   - Social features for adding friends and joining a party in a campaign
   - GM tools for scheduling and managing play sessions
   - Optional character sheet locking between sessions
@@ -85,7 +85,7 @@ The Minimum Viable Product includes:
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 The project is built using a modern full-stack architecture with a focus on test-driven development, containerization, and continuous deployment.
 
@@ -107,7 +107,7 @@ The project is built using a modern full-stack architecture with a focus on test
 
 ---
 
-## 🌍 Deployment Info
+## Deployment Info
 
 - **Frontend URL**: [dc20clerk.dronico.net](https://dc20clerk.dronico.net)
 - **Branch Strategy**:
