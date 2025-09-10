@@ -37,17 +37,10 @@ While a typical VTT (Virtual Table Top) is a full replacement of the in-person t
 
 The Minimum Viable Product includes:
 
-- [ ] Homepage with navigation
-- [ ] User authentication (login/register)
-- [ ] Character Sheet builder:
-  - [ ] Create and manage characters
-  - [ ] Save/export/share character sheets
-  - [ ] Form fillable sheet with no calculations
-- [ ] Fully deployed and accessible
-  - [ ] Frontend deployed to GitHub Pages
-  - [ ] Backend deployed to Leapcell
-  - [ ] Database and auth hosted by Supabase
-  - [ ] Accessible and secure via custom domain
+- Homepage with navigation
+- User authention
+- Character Sheet manager
+- Fully deployed and accessible online
 
 ---
 
@@ -85,6 +78,44 @@ The Minimum Viable Product includes:
 
 ---
 
+## Task checklist
+
+- [ ] Homepage with navigation
+- [ ] User authentication
+  - [ ] Login modal
+  - [ ] Signup modal
+  - [ ] Auth links in navbar (Login / Register / Logout)
+  - [ ] Auth context and hooks (e.g. useAuth)
+  - [x] Supabase project setup
+    - [x] Enable email/password authentication
+  - [ ] Supabase client integration
+    - [ ] Environment-based configuration (dev vs prod)
+    - [ ] Session persistence
+    - [ ] Auth guards for protected routes
+  - [ ] Go backend service for authentication
+    - [ ] /auth/ endpoints
+    - [ ] Middleware for JWT verification and user context injection
+    - [ ] Role-based access control (RBAC) logic
+  - [ ] Frontend integration with auth service
+- [ ] Character Sheet builder
+  - [ ] Create and manage characters
+  - [ ] Save/export/share character sheets
+  - [ ] Form fillable sheet with no calculations
+- [ ] Backend Gateway service
+  - [ ] Handles routing between frontend and auth service
+  - [ ] Handles routing between frontend and character service
+- [ ] Production fully deployed and accessible
+  - [x] Frontend deployed to GitHub Pages
+  - [ ] Backend deployed to Leapcell
+  - [ ] Database and auth hosted by Supabase
+  - [x] Accessible and secure via custom domain
+- [ ] Development environment fully functional
+  - [x] Frontend running on localhost
+  - [ ] Backend builds and runs in docker containers
+  - [ ] Database and auth hosted by Supabase, separate from prod instance
+
+---
+
 ## Tech Stack
 
 The project is built using a modern full-stack architecture with a focus on test-driven development, containerization, and continuous deployment.
@@ -110,13 +141,17 @@ The project is built using a modern full-stack architecture with a focus on test
 ## Deployment Info
 
 - **Frontend URL**: [dc20clerk.dronico.net](https://dc20clerk.dronico.net)
+- **Deployment**
+  - Frontend: [Github Pages](https://pages.github.com/)
+  - Backend: [Leapcell.io](https://leapcell.io)
+  - Database and auth [Supabase](https://supabase.com/)
 - **Branch Strategy**:
   - `main`: Protected release branch
   - `dev`: Default working branch
   - `feature/*`: Feature branches merged into `dev`
 - **CI/CD**:
   - GitHub Actions deploy frontend on push to `main`
-  - Backend services deployed to Leapcell.io via GitOps
+  - Backend services deployed via GitOps
 
 ---
 
