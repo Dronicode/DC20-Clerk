@@ -85,21 +85,17 @@ The Minimum Viable Product includes:
   - [ ] Login modal
   - [ ] Signup modal
   - [ ] Auth links in navbar (Login / Register / Logout)
-  - [ ] Auth context and hooks (e.g. useAuth)
   - [x] Supabase project setup
     - [x] Enable email/password authentication
   - [ ] Supabase client integration
     - [ ] Environment-based configuration (dev vs prod)
     - [ ] Session persistence
-    - [ ] Auth guards for protected routes
   - [ ] Go backend service for authentication
     - [ ] /auth/ endpoints
-    - [ ] Middleware for JWT verification and user context injection
-    - [ ] Role-based access control (RBAC) logic
-  - [ ] Frontend integration with auth service
+  - [ ] Frontend integration with backend service
 - [ ] Character Sheet builder
   - [ ] Create and manage characters
-  - [ ] Save/export/share character sheets
+  - [ ] Export/ import/ share character sheets
   - [ ] Form fillable sheet with no calculations
 - [ ] Backend Gateway service
   - [ ] Handles routing between frontend and auth service
