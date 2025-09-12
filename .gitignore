@@ -41,6 +41,7 @@ go.work
 
 ### dotenv ###
 *.env
+.env-*
 
 ### VisualStudioCode ###
 .vscode/*
