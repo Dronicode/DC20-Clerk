@@ -10,6 +10,9 @@ export default function Navbar() {
         <li>
           <Link to="/characters">Character Sheets</Link>
         </li>
+        <li>
+          <Link to="/">Other stuff coming later</Link>
+        </li>
       </ul>
     </nav>
   );
