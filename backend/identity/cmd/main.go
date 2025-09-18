@@ -1,21 +1,19 @@
 package main
 
 import (
-	"dc20clerk/backend/identity/internal/handler"
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
+	"dc20clerk/backend/identity/internal/middleware"
+	"dc20clerk/backend/identity/internal/router"
+	"dc20clerk/backend/identity/pkg/utilities"
 )
 
 func main() {
-  godotenv.Load(".env")
+	// Load JWKS once at startup (or periodically if needed)
+	jwksProvider := middleware.NewJWKSProvider(utilities.Env("SUPABASE_URL") + "auth/v1/.well-known/jwks.json")
+	r := router.NewRouter(jwksProvider)
 
-  r := mux.NewRouter()
-  r.HandleFunc("/identity/login", handler.Login).Methods("POST")
-  r.HandleFunc("/identity/register", handler.Register).Methods("POST")
-
-  log.Println("Identity service running on :8081")
-  http.ListenAndServe(":8081", r)
+	log.Println("Identity service running on :8081")
+	http.ListenAndServe(":8081", r)
 }
