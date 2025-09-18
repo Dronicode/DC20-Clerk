@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"time"
@@ -28,35 +29,40 @@ var DefaultHTTPClient HTTPPoster = &http.Client{
 // PostJSON sends v as JSON to url using client (or DefaultHTTPClient when client==nil),
 // sets headers, and decodes the JSON response into out (if out != nil).
 func PostJSON(ctx context.Context, client HTTPPoster, url string, headers map[string]string, v interface{}, out interface{}) error {
+    
     // Use the default client if caller didn't provide one
     if client == nil {
         client = DefaultHTTPClient
     }
-
+    
     // Convert the request body (v) to JSON bytes
     b, err := json.Marshal(v)
     if err != nil {
         return err
     }
-
+    
     // Build an HTTP POST request bound to the caller's context (for cancel/timeouts)
     req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(b))
     if err != nil {
         return err
     }
-
+    
     // Required header for JSON body
     req.Header.Set("Content-Type", "application/json")
     // Add any additional headers the caller provided (e.g., apikey, Authorization)
     for k, val := range headers {
         req.Header.Set(k, val)
     }
-
+    
+    log.Printf("POST to %s with headers: %v", url, headers)
     // Send the request
     res, err := client.Do(req)
     if err != nil {
+        log.Printf("PostJSON response error: %v", err)
         return err
     }
+    log.Printf("Supabase response status: %d", res.StatusCode)
+    
     // Ensure the body is fully read and closed so connections are reused
     defer drainBody(res.Body)
 
