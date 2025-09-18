@@ -2,7 +2,6 @@ package supabase
 
 import (
 	"context"
-	"path"
 
 	"dc20clerk/backend/identity/internal/auth"
 	"dc20clerk/backend/identity/pkg/utilities"
@@ -19,14 +18,14 @@ type TokenResponse struct {
 // RegisterUser creates a new user with email/password using Supabase REST /auth/v1/signup.
 // Returns nil on success, or an error string from the API on failure.
 func RegisterUser(ctx context.Context, client auth.HTTPPoster, email, password string) error {
-	url := path.Join(utilities.Env("SUPABASE_URL") + "auth/v1/signup")
+	url := utilities.Env("SUPABASE_URL") + "auth/v1/signup"
 	req := map[string]string{
 		"email":    email,
 		"password": password,
 	}
 	headers := map[string]string{
-		"apikey":        utilities.Env("SUPABASE_ANON_KEY"),
-		"Authorization": "Bearer " + utilities.Env("SUPABASE_ANON_KEY"),
+		"apikey":        utilities.Env("SUPABASE_SECRET_KEY"),
+		"Authorization": "Bearer " + utilities.Env("SUPABASE_SECRET_KEY"),
 	}
 	// We don't expect a useful body on success; PostJSON returns decoded body only if out != nil
 	return auth.PostJSON(ctx, client, url, headers, req, nil)
@@ -34,15 +33,15 @@ func RegisterUser(ctx context.Context, client auth.HTTPPoster, email, password s
 
 // LoginUser requests access and refresh tokens using Supabase REST /auth/v1/token with grant_type=password.
 func LoginUser(ctx context.Context, client auth.HTTPPoster, email, password string) (*TokenResponse, error) {
-	url := path.Join(utilities.Env("SUPABASE_URL") + "auth/v1/token")
+	url := utilities.Env("SUPABASE_URL") + "auth/v1/token"
 	req := map[string]string{
 		"grant_type": "password",
 		"email":      email,
 		"password":   password,
 	}
 	headers := map[string]string{
-		"apikey":        utilities.Env("SUPABASE_ANON_KEY"),
-		"Authorization": "Bearer " + utilities.Env("SUPABASE_ANON_KEY"),
+		"apikey":        utilities.Env("SUPABASE_SECRET_KEY"),
+		"Authorization": "Bearer " + utilities.Env("SUPABASE_SECRET_KEY"),
 	}
 	var tr TokenResponse
 	if err := auth.PostJSON(ctx, client, url, headers, req, &tr); err != nil {

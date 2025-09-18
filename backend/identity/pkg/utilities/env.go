@@ -12,7 +12,7 @@ var loadOnce sync.Once
 
 func Env(key string) string {
 	loadOnce.Do(func() {
-		if err := godotenv.Load("../../.env"); err != nil {
+		if err := godotenv.Load(".env"); err != nil {
 			log.Printf("Warning: .env failed to load: %v", err)
 		}
 	})

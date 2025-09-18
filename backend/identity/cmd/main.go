@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Load JWKS once at startup (or periodically if needed)
-	jwksProvider := middleware.NewJWKSProvider(utilities.Env("SUPABASE_URL") + "/auth/v1/.well-known/jwks.json")
+	jwksProvider := middleware.NewJWKSProvider(utilities.Env("SUPABASE_URL") + "auth/v1/.well-known/jwks.json")
 	r := router.NewRouter(jwksProvider)
 
 	log.Println("Identity service running on :8081")

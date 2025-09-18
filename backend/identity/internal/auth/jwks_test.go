@@ -8,7 +8,7 @@ import (
 )
 
 func TestFetchJWKS(t *testing.T) {
-	jwksURL := utilities.Env("SUPABASE_URL") + "/auth/v1/.well-known/jwks.json"
+	jwksURL := utilities.Env("SUPABASE_URL") + "auth/v1/.well-known/jwks.json"
 	log.Printf("JWKS URL: %s", jwksURL)
 	keySet, err := auth.FetchJWKS(jwksURL)
 	if err != nil {
