@@ -28,10 +28,18 @@ const Navbar: React.FC = () => {
       <LoginModal
         isOpen={activeModal === 'login'}
         onClose={() => setActiveModal(null)}
+        onLoginSuccess={() => {
+          setIsLoggedIn(true);
+          setActiveModal(null);
+        }}
       />
       <SignupModal
         isOpen={activeModal === 'signup'}
         onClose={() => setActiveModal(null)}
+        onSignupSuccess={() => {
+          setIsLoggedIn(true);
+          setActiveModal(null);
+        }}
       />
     </>
   );
