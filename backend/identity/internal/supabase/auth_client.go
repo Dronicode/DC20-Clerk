@@ -33,11 +33,11 @@ func RegisterUser(ctx context.Context, client auth.HTTPPoster, email, password s
 
 // LoginUser requests access and refresh tokens using Supabase REST /auth/v1/token with grant_type=password.
 func LoginUser(ctx context.Context, client auth.HTTPPoster, email, password string) (*TokenResponse, error) {
-	url := utilities.Env("SUPABASE_URL") + "auth/v1/token"
+	url := utilities.Env("SUPABASE_URL") + "auth/v1/token?grant_type='password'"
+
 	req := map[string]string{
-		"grant_type": "password",
-		"email":      email,
-		"password":   password,
+		"email":    email,
+		"password": password,
 	}
 	headers := map[string]string{
 		"apikey":        utilities.Env("SUPABASE_SECRET_KEY"),
