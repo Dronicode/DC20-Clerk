@@ -23,7 +23,18 @@ export default tseslint.config([
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['@features/*/*'],
+          zones: [
+            {
+              target: './src/features',
+              from: './src/pages',
+              message: 'Pages must import from feature public API only',
+            },
+            {
+              target: './src/widgets',
+              from: './src/pages',
+              message: 'Pages must import widgets via index.ts',
+            },
+          ],
         },
       ],
     },
