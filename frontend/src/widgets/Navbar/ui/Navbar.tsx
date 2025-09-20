@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import LoginModal from '@features/identity/components/LoginModal';
-import SignupModal from '@features/identity/components/SignupModal';
+import { LoginModal, SignupModal } from '@features/identity';
 import React, { useState, useEffect } from 'react';
 
 const Navbar: React.FC = () => {
