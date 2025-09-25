@@ -59,6 +59,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
 	}
+	log.Printf("loginResponse: %s\n", resp)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 }

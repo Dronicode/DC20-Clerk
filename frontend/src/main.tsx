@@ -1,24 +1,12 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import './index.css';
-import { AppLayout } from '@widgets/Navbar'; // exposed via index.ts
-import { Home } from '@pages/Home'; // exposed via index.ts
-import { CharacterSheetManager } from '@pages/CharacterSheetManager'; // exposed via index.ts
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { App } from '@app/App';
+import { AuthProvider } from './app/providers/AuthProvider';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <AppLayout />, // shared layout
-    children: [
-      { index: true, element: <Home /> },
-      { path: 'characters', element: <CharacterSheetManager /> },
-    ],
-  },
-]);
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </React.StrictMode>,
 );

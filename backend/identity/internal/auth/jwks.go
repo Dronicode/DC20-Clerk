@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
@@ -16,12 +18,19 @@ type JWKS struct {
 }
 
 type JWK struct {
-	Kid string `json:"kid"`
-	Kty string `json:"kty"`
-	Alg string `json:"alg"`
-	Use string `json:"use"`
-	N   string `json:"n"` // RSA modulus
-	E   string `json:"e"` // RSA exponent
+	Kid string `json:"kid"` // Key ID used to match the JWT header
+	Kty string `json:"kty"` // Key type: "RSA" or "EC"
+	Alg string `json:"alg"` // Algorithm: "RS256", "ES256", etc.
+	Use string `json:"use"` // Intended use: usually "sig" for signature
+
+	// RSA fields
+	N string `json:"n,omitempty"` // RSA modulus
+	E string `json:"e,omitempty"` // RSA exponent
+
+	// EC fields
+	Crv string `json:"crv,omitempty"` // Curve name, e.g. "P-256"
+	X   string `json:"x,omitempty"`   // X coordinate of EC public key
+	Y   string `json:"y,omitempty"`   // Y coordinate of EC public key
 }
 
 // FetchJWKS retrieves the JWKS from Supabase
@@ -59,6 +68,17 @@ func FindJWKByKeyID(jwks *JWKS, kid string) (*JWK, error) {
 	return nil, fmt.Errorf("no matching key found for kid: %s", kid)
 }
 
+func ConvertJWKToPublicKey(jwk JWK) (interface{}, error) {
+	switch jwk.Kty {
+	case "RSA":
+		return ConvertJWKToRSAPublicKey(jwk)
+	case "EC":
+		return ConvertJWKToECPublicKey(jwk)
+	default:
+		return nil, fmt.Errorf("unsupported key type: %s", jwk.Kty)
+	}
+}
+
 // ConvertJWKToRSAPublicKey takes a JWK and returns an rsa.PublicKey.
 func ConvertJWKToRSAPublicKey(jwk JWK) (*rsa.PublicKey, error) {
 	// Decode the base64url-encoded modulus (n)
@@ -82,4 +102,32 @@ func ConvertJWKToRSAPublicKey(jwk JWK) (*rsa.PublicKey, error) {
 	}
 
 	return pubKey, nil
+}
+
+func ConvertJWKToECPublicKey(jwk JWK) (*ecdsa.PublicKey, error) {
+	// Supabase uses P-256 for ES256 tokens
+	if jwk.Crv != "P-256" {
+		return nil, fmt.Errorf("unsupported curve: %s", jwk.Crv)
+	}
+
+	// Decode base64url-encoded X and Y coordinates
+	xBytes, err := base64.RawURLEncoding.DecodeString(jwk.X)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode X coordinate: %w", err)
+	}
+	yBytes, err := base64.RawURLEncoding.DecodeString(jwk.Y)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode Y coordinate: %w", err)
+	}
+
+	// Convert to big.Int for elliptic curve math
+	x := new(big.Int).SetBytes(xBytes)
+	y := new(big.Int).SetBytes(yBytes)
+
+	// Construct the EC public key using P-256 curve
+	return &ecdsa.PublicKey{
+		Curve: elliptic.P256(),
+		X:     x,
+		Y:     y,
+	}, nil
 }

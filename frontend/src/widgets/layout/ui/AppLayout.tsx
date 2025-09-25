@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Navbar } from '@widgets/Navbar';
 
-export default function AppLayout() {
+export const AppLayout = () => {
   return (
     <>
       <Navbar />
@@ -10,4 +10,4 @@ export default function AppLayout() {
       </main>
     </>
   );
-}
+};
