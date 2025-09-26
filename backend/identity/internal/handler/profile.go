@@ -1,61 +1,45 @@
 package handler
 
 import (
-	"io"
+	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
 	"dc20clerk/backend/identity/internal/middleware"
-	"dc20clerk/backend/identity/pkg/utilities"
+	"dc20clerk/backend/identity/internal/service/identity"
 )
 
 // ProfileHandler returns basic info about the authenticated user.
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("[PROFILE] ProfileHandler invoked")
 
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
 	// Extract user ID from context
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
-	log.Printf("[PROFILE] Extracted user ID: %s\n", userID)
+	userID, ok := middleware.GetUserID(r)
 	if !ok || userID == "" {
 		log.Println("[PROFILE] Missing user ID in context")
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
-	log.Println("[PROFILE] Extracted user ID:", userID)
+	log.Printf("[PROFILE] Extracted user ID: %s\n", userID)
 
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		log.Println("[PROFILE] Missing Authorization header")
+	accessToken, ok := r.Context().Value(middleware.AccessTokenKey).(string)
+	if !ok || accessToken == "" {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
-
-	// Call Supabase /auth/v1/user
-	log.Println("[PROFILE] Sending GET to " + utilities.Env("SUPABASE_URL") + "auth/v1/user")
-	req, err := http.NewRequest("GET", utilities.Env("SUPABASE_URL")+"auth/v1/user", nil)
+	resp, err := identity.FetchUserProfile(ctx, accessToken, userID)
 	if err != nil {
-		http.Error(w, "failed to create request", http.StatusInternalServerError)
-		return
-	}
-	req.Header.Set("Authorization", authHeader)
-	req.Header.Set("apikey", utilities.Env("SUPABASE_SECRET_KEY"))
-
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Printf("[PROFILE] Supabase /user request failed: %v", err)
-		http.Error(w, "failed to fetch user profile", http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		log.Printf("[PROFILE] Supabase /user returned status: %d\n", resp.StatusCode)
-		http.Error(w, "failed to fetch user profile", http.StatusInternalServerError)
+		log.Printf("[PROFILE] Error fetching profile: %v", err)
+		http.Error(w, "failed to fetch profile", http.StatusInternalServerError)
 		return
 	}
 
-	// Forward Supabase response to frontend
+	// Forward response to frontend
 	w.Header().Set("Content-Type", "application/json")
-	io.Copy(w, resp.Body)
+	json.NewEncoder(w).Encode(resp)
 }

@@ -13,10 +13,12 @@ import (
 	"time"
 )
 
+// JWKS represents a JSON Web Key Set, typically fetched from an identity provider.
 type JWKS struct {
 	Keys []JWK `json:"keys"`
 }
 
+// JWK represents a single JSON Web Key used to verify JWTs.
 type JWK struct {
 	Kid string `json:"kid"` // Key ID used to match the JWT header
 	Kty string `json:"kty"` // Key type: "RSA" or "EC"
@@ -33,7 +35,7 @@ type JWK struct {
 	Y   string `json:"y,omitempty"`   // Y coordinate of EC public key
 }
 
-// FetchJWKS retrieves the JWKS from Supabase
+// FetchJWKS retrieves the JWKS from the given URL and decodes it.
 func FetchJWKS(jwksURL string) (*JWKS, error) {
 	client := &http.Client{Timeout: 5 * time.Second}
 	res, err := client.Get(jwksURL)
@@ -68,6 +70,7 @@ func FindJWKByKeyID(jwks *JWKS, kid string) (*JWK, error) {
 	return nil, fmt.Errorf("no matching key found for kid: %s", kid)
 }
 
+// ConvertJWKToPublicKey converts a JWK to a usable RSA or EC public key.
 func ConvertJWKToPublicKey(jwk JWK) (interface{}, error) {
 	switch jwk.Kty {
 	case "RSA":
@@ -79,7 +82,6 @@ func ConvertJWKToPublicKey(jwk JWK) (interface{}, error) {
 	}
 }
 
-// ConvertJWKToRSAPublicKey takes a JWK and returns an rsa.PublicKey.
 func ConvertJWKToRSAPublicKey(jwk JWK) (*rsa.PublicKey, error) {
 	// Decode the base64url-encoded modulus (n)
 	nBytes, err := base64.RawURLEncoding.DecodeString(jwk.N)

@@ -10,12 +10,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// jwtHeader represents the decoded JWT header segment.
 type jwtHeader struct {
 	Alg string `json:"alg"`
 	Typ string `json:"typ"`
 	Kid string `json:"kid"`
 }
 
+// ExtractJWTHeader decodes the JWT header segment to extract algorithm and key ID.
 func ExtractJWTHeader(token string) (*jwtHeader, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
@@ -38,7 +40,7 @@ func ExtractJWTHeader(token string) (*jwtHeader, error) {
 	return &header, nil
 }
 
-// VerifyJWT parses and verifies the JWT.
+// VerifyJWT parses and verifies the JWT using the provided public key and algorithm.
 func VerifyJWT(tokenString string, pubKey interface{}, alg string) (*jwt.Token, error) {
 	return jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		if t.Method.Alg() != alg {
@@ -49,6 +51,7 @@ func VerifyJWT(tokenString string, pubKey interface{}, alg string) (*jwt.Token, 
 }
 
 // ValidateToken performs full JWT validation using the JWKS.
+// ValidateToken extracts the header, finds the matching key, converts it, and verifies the signature.
 func ValidateToken(tokenString string, jwks *JWKS) (*jwt.Token, error) {
 	// Step 1: Extract the JWT header to get the kid
 	header, err := ExtractJWTHeader(tokenString)

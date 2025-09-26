@@ -8,52 +8,39 @@ import (
 	"net/http"
 	"time"
 
-	"dc20clerk/backend/identity/internal/supabase"
+	"dc20clerk/backend/identity/internal/service/identity"
 )
-
-type registerRequest struct {
-    Email    string `json:"email"`
-    Password string `json:"password"`
-}
 
 // Register is the HTTP handler for POST /identity/register
 func Register(w http.ResponseWriter, r *http.Request) {
-    log.Printf("Register request: %s %s", r.Method, r.URL.Path)
-    // small timeout per request
-    ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
-    defer cancel()
+	log.Printf("Register request: %s %s", r.Method, r.URL.Path)
 
-    // read body
-    body, err := io.ReadAll(r.Body)
-    if err != nil {
-        http.Error(w, "unable to read body", http.StatusBadRequest)
-        log.Printf("Registration error: %v", err)
-        return
-    }
-    defer r.Body.Close()
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
 
-    var req registerRequest
-    if err := json.Unmarshal(body, &req); err != nil {
-        http.Error(w, "invalid JSON", http.StatusBadRequest)
-        log.Printf("Registration error: %v", err)
-        return
-    }
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "unable to read body", http.StatusBadRequest)
+		log.Printf("Registration error: %v", err)
+		return
+	}
+	defer r.Body.Close()
 
-    // basic validation
-    if req.Email == "" || req.Password == "" {
-        http.Error(w, "email and password required", http.StatusBadRequest)
-        return
-    }
+	var req identity.RegisterRequest
+	if err := json.Unmarshal(body, &req); err != nil {
+		http.Error(w, "invalid JSON", http.StatusBadRequest)
+		log.Printf("Registration error: %v", err)
+		return
+	}
 
-    // Call supabase (uses the package-level replaceable function)
-    if err := supabase.RegisterUserFunc(ctx, nil, req.Email, req.Password); err != nil {
-        // return server error with the message from Supabase (PostJSON returns API body on non-2xx)
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        log.Printf("Registration error: %v", err)
-        return
-    }
+	resp, err := identity.RegisterUser(ctx, req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Registration error: %v", err)
+		return
+	}
 
-    // created
-    w.WriteHeader(http.StatusCreated)
-    w.Write([]byte("user created"))
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(resp)
 }
