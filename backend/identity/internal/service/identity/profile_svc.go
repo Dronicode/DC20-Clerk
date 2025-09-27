@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"dc20clerk/backend/identity/internal/provider/supabase"
+	"dc20clerk/backend/identity/pkg/httpx"
 )
 
 type ProfileResponse struct {
@@ -25,7 +26,7 @@ func FetchUserProfile(ctx context.Context, accessToken string, userID string) (*
 		return nil, errors.New("[PROFILE] missing user ID")
 	}
 
-	profile, err := supabase.GetUserProfile(ctx, accessToken)
+	profile, err := supabase.GetUserProfile(ctx, httpx.DefaultHTTPClient, accessToken)
 	if err != nil {
 		return nil, err
 	}

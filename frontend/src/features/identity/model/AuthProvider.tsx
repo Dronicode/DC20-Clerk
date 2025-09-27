@@ -1,7 +1,5 @@
-// features/identity/model/AuthProvider.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { setMe, clearMe } from '@entities/me';
-import { getProfile } from '../api/getProfile';
+import { clearMeProfile } from '@entities/me/model/meProfile';
+import React, { createContext, useEffect, useState } from 'react';
 
 type AuthContextType = {
   isLoggedIn: boolean;
@@ -18,21 +16,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
+    const access_token = localStorage.getItem('access_token');
+    if (!access_token) return;
 
-    getProfile(token).then((profile) => {
-      if (profile?.email) {
-        setIsLoggedIn(true);
-        setMe({ accessToken: token, email: profile.email });
-      }
-    });
+    setIsLoggedIn(true);
   }, []);
 
   const logout = () => {
     localStorage.removeItem('access_token');
     setIsLoggedIn(false);
-    clearMe();
+    clearMeProfile();
   };
 
   return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { setMe } from '@entities/me';
+import { setMeProfile } from '@entities/me';
 import { getProfile, loginUser } from '../api';
+import type { UserProfile } from '@shared/types/UserProfile';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -26,15 +27,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       const { access_token } = await loginUser(email, password);
       localStorage.setItem('access_token', access_token);
 
-      const profile = await getProfile(access_token);
-      if (profile?.email) {
-        setMe({ accessToken: access_token, email: profile.email });
-        onLoginSuccess();
-      } else {
-        throw new Error('Failed to load profile');
-      }
+      const profile: UserProfile | null = await getProfile();
+      if (!profile) throw new Error('Failed to load profile');
+      setMeProfile(profile);
+      onLoginSuccess();
     } catch (err) {
-      console.error(err);
+      console.error('[LOGIN] Failed:', err);
       alert('Login failed');
     }
   };
@@ -44,18 +42,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <input type="email" onChange={(e) => setEmail(e.target.value)} />
 
         <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <input type="password" onChange={(e) => setPassword(e.target.value)} />
 
         <button type="submit">Login</button>
         <button type="button" onClick={onClose}>

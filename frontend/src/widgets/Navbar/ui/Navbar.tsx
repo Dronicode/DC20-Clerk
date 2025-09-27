@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useAuth, LoginModal, SignupModal } from '@features/identity';
-import { useMe } from '@entities/me';
 import { useState } from 'react';
+import { useMeProfile } from '@entities/me/model/meProfile';
 
 export const Navbar = () => {
   const { isLoggedIn, logout } = useAuth();
-  const { email } = useMe();
+  const profile = useMeProfile();
 
   type ModalType = 'login' | 'signup' | null;
   const [activeModal, setActiveModal] = useState<ModalType>(null);
@@ -15,9 +15,9 @@ export const Navbar = () => {
       <Link to="/">Home</Link>
       <Link to="/characters">Character Sheet Manager</Link>
 
-      {isLoggedIn ? (
+      {isLoggedIn && profile ? (
         <>
-          <span>{email}</span>
+          <span>{profile.email}</span>
           <button onClick={logout}>Logout</button>
         </>
       ) : (
