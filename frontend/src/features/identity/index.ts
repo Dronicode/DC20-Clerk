@@ -1,2 +1,5 @@
-export { default as LoginModal } from './ui/LoginModal';
-export { default as SignupModal } from './ui/SignupModal';
+export { AuthProvider } from './model/AuthProvider';
+export { useAuth } from './model/useAuth';
+
+export { LoginModal } from './ui/LoginModal';
+export { SignupModal } from './ui/SignupModal';

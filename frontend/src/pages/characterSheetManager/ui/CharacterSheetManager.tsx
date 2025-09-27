@@ -1,4 +1,4 @@
-const CharacterSheetManager = () => {
+export const CharacterSheetManager = () => {
   return <h2>CharacterSheetManager</h2>;
 };
 

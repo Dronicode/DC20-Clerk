@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
+import { setMeProfile } from '@entities/me';
+import { getProfile, registerUser } from '../api';
+import type { UserProfile } from '@shared/types/UserProfile';
 
 interface SignupModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSignupSuccess: () => void;
+  onSwitchToLogin: () => void;
 }
 
-const SignupModal: React.FC<SignupModalProps> = ({
+export const SignupModal: React.FC<SignupModalProps> = ({
   isOpen,
   onClose,
   onSignupSuccess,
+  onSwitchToLogin,
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,58 +30,47 @@ const SignupModal: React.FC<SignupModalProps> = ({
     }
 
     try {
-      const res = await fetch('/identity/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      const { access_token } = await registerUser(email, password);
+      localStorage.setItem('access_token', access_token);
 
-      if (!res.ok) {
-        throw new Error('Signup failed');
-      }
+      const profile: UserProfile | null = await getProfile();
+      if (!profile) throw new Error('Failed to load profile');
 
-      localStorage.setItem('access_token', 'placeholder');
+      setMeProfile(profile);
       onSignupSuccess();
     } catch (err) {
-      console.error(err);
+      console.error('[SIGNUP] Failed:', err);
       alert('Signup failed');
     }
   };
 
   return (
-    <div className="modal-backdrop">
-      <div className="modal-content">
-        <h2>Sign Up</h2>
-        <form onSubmit={handleSubmit}>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <div>
+      <h2>Sign Up</h2>
+      <form onSubmit={handleSubmit}>
+        <label>Email</label>
+        <input type="email" onChange={(e) => setEmail(e.target.value)} />
 
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <label>Password</label>
+        <input type="password" onChange={(e) => setPassword(e.target.value)} />
 
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
 
-          <button type="submit">Register</button>
-          <button type="button" onClick={onClose}>
-            Cancel
-          </button>
-        </form>
-      </div>
+        <button type="submit">Register</button>
+        <button type="button" onClick={onClose}>
+          Cancel
+        </button>
+      </form>
+      <p>
+        Already have an account?{' '}
+        <button type="button" onClick={onSwitchToLogin}>
+          Log in here
+        </button>
+      </p>
     </div>
   );
 };
-
-export default SignupModal;

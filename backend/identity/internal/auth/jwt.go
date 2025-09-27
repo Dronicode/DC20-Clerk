@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -11,12 +10,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// jwtHeader represents the decoded JWT header segment.
 type jwtHeader struct {
 	Alg string `json:"alg"`
 	Typ string `json:"typ"`
 	Kid string `json:"kid"`
 }
 
+// ExtractJWTHeader decodes the JWT header segment to extract algorithm and key ID.
 func ExtractJWTHeader(token string) (*jwtHeader, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
@@ -39,25 +40,18 @@ func ExtractJWTHeader(token string) (*jwtHeader, error) {
 	return &header, nil
 }
 
-// VerifyJWT parses and verifies the JWT using the provided RSA public key.
-func VerifyJWT(tokenString string, pubKey *rsa.PublicKey) (*jwt.Token, error) {
-	// Parse the token and verify its signature using the public key
-	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		// Ensure the signing method is RS256
-		if t.Method.Alg() != jwt.SigningMethodRS256.Alg() {
+// VerifyJWT parses and verifies the JWT using the provided public key and algorithm.
+func VerifyJWT(tokenString string, pubKey interface{}, alg string) (*jwt.Token, error) {
+	return jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		if t.Method.Alg() != alg {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return pubKey, nil
 	})
-	if err != nil {
-		return nil, fmt.Errorf("JWT verification failed: %w", err)
-	}
-
-	// Return the verified token
-	return token, nil
 }
 
 // ValidateToken performs full JWT validation using the JWKS.
+// ValidateToken extracts the header, finds the matching key, converts it, and verifies the signature.
 func ValidateToken(tokenString string, jwks *JWKS) (*jwt.Token, error) {
 	// Step 1: Extract the JWT header to get the kid
 	header, err := ExtractJWTHeader(tokenString)
@@ -72,13 +66,13 @@ func ValidateToken(tokenString string, jwks *JWKS) (*jwt.Token, error) {
 	}
 
 	// Step 3: Convert the JWK to an RSA public key
-	pubKey, err := ConvertJWKToRSAPublicKey(*key)
+	pubKey, err := ConvertJWKToPublicKey(*key)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert JWK to RSA key: %w", err)
+		return nil, fmt.Errorf("failed to convert JWK to public key: %w", err)
 	}
 
 	// Step 4: Verify the JWT signature using the public key
-	token, err := VerifyJWT(tokenString, pubKey)
+	token, err := VerifyJWT(tokenString, pubKey, header.Alg)
 	if err != nil {
 		return nil, fmt.Errorf("JWT verification failed: %w", err)
 	}

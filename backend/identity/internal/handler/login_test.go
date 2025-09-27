@@ -10,15 +10,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"dc20clerk/backend/identity/internal/auth"
-	"dc20clerk/backend/identity/internal/supabase"
+	"dc20clerk/backend/identity/internal/provider/supabase"
+	"dc20clerk/backend/identity/pkg/httpx"
 )
 
 func TestLogin_Success(t *testing.T) {
 	orig := supabase.LoginUserFunc
 	defer func() { supabase.LoginUserFunc = orig }()
 
-	supabase.LoginUserFunc = func(ctx context.Context, client auth.HTTPPoster, email, password string) (*supabase.TokenResponse, error) {
+	supabase.LoginUserFunc = func(ctx context.Context, client httpx.HTTPPoster, email, password string) (*supabase.TokenResponse, error) {
 		if email != "a@b.c" || password != "p" {
 			t.Fatalf("unexpected args: %q %q", email, password)
 		}
@@ -69,7 +69,7 @@ func TestLogin_SupabaseError(t *testing.T) {
 	orig := supabase.LoginUserFunc
 	defer func() { supabase.LoginUserFunc = orig }()
 
-	supabase.LoginUserFunc = func(ctx context.Context, client auth.HTTPPoster, email, password string) (*supabase.TokenResponse, error) {
+	supabase.LoginUserFunc = func(ctx context.Context, client httpx.HTTPPoster, email, password string) (*supabase.TokenResponse, error) {
 		return nil, &testErr{"invalid credentials"}
 	}
 
