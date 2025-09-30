@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
 import { useAuth, LoginModal, SignupModal } from '@features/identity';
 import { useState } from 'react';
-import { useMeProfile } from '@entities/me/model/meProfile';
+import { useHydrateMeProfile } from '@entities/me';
 
 export const Navbar = () => {
   const { isLoggedIn, logout } = useAuth();
-  const profile = useMeProfile();
+  const { profile, loading } = useHydrateMeProfile();
 
   type ModalType = 'login' | 'signup' | null;
   const [activeModal, setActiveModal] = useState<ModalType>(null);
+
+  if (loading) return null;
 
   return (
     <nav>

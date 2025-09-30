@@ -1,8 +1,7 @@
-import { clearMeProfile } from '@entities/me/model/meProfile';
+import { clearMeProfile } from '@entities/me';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
-import { cacheProfile } from './cacheProfile';
-import { onStorageChange } from '@shared/lib/storageListener';
-import { STORAGE_KEYS } from '@shared/config/storageKeys';
+import { onStorageChange } from '@shared/lib';
+import { STORAGE_KEYS } from '@shared/config';
 
 type AuthContextType = {
   isLoggedIn: boolean;
@@ -17,17 +16,11 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const contextValue = useMemo(() => {
-    return { isLoggedIn, logout };
-  }, [isLoggedIn]);
 
   useEffect(() => {
     const accessToken = localStorage.getItem(STORAGE_KEYS.accessToken);
     if (accessToken) {
       setIsLoggedIn(true);
-      cacheProfile();
     }
 
     const unsubscribe = onStorageChange((key, _, newValue) => {
@@ -37,10 +30,8 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
       setIsLoggedIn(true);
-      cacheProfile();
     });
 
-    setIsLoading(false);
     return unsubscribe;
   }, []);
 
@@ -50,7 +41,10 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
     clearMeProfile();
   };
 
-  if (isLoading) return null;
+  const contextValue = useMemo(() => {
+    return { isLoggedIn, logout };
+  }, [isLoggedIn]);
+
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );

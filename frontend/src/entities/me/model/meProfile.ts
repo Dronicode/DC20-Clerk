@@ -1,6 +1,5 @@
-import { STORAGE_KEYS } from '@shared/config/storageKeys';
-import type { UserProfile } from '@shared/types/UserProfile';
-import { useEffect, useState } from 'react';
+import { STORAGE_KEYS } from '@shared/config';
+import type { UserProfile } from '@shared/types';
 
 let profile: UserProfile | null = null;
 let listeners: ((profile: UserProfile | null) => void)[] = [];
@@ -53,18 +52,4 @@ export const hydrateMeProfileFromSession = () => {
   } catch (err) {
     console.warn('[meProfile] Failed to parse cached profile:', err);
   }
-};
-
-/**
- * React hook to access the current profile reactively.
- */
-export const useMeProfile = (): UserProfile | null => {
-  const [state, setState] = useState<UserProfile | null>(getMeProfile());
-
-  useEffect(() => {
-    const unsubscribe = subscribeMeProfile(setState);
-    return () => unsubscribe();
-  }, []);
-
-  return state;
 };
