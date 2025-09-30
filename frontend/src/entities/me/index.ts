@@ -4,5 +4,7 @@ export {
   hydrateMeProfileFromSession,
   setMeProfile,
   subscribeMeProfile,
-  useMeProfile,
 } from './model/meProfile';
+
+export { useHydrateMeProfile } from './hooks/useHydrateMeProfile';
+export { useMeProfile } from './hooks/useMeProfile';

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { setMeProfile } from '@entities/me';
-import { getProfile, loginUser } from '../api';
-import type { UserProfile } from '@shared/types/UserProfile';
-import { STORAGE_KEYS } from '@shared/config/storageKeys';
+import { getProfile, loginUser } from '..';
+import type { UserProfile } from '@shared/types';
+import { STORAGE_KEYS } from '@shared/config';
 
 interface LoginModalProps {
   isOpen: boolean;

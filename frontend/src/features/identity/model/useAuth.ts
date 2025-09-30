@@ -1,4 +1,3 @@
-// features/identity/model/useAuth.ts
 import { useContext } from 'react';
 import { AuthContext } from './IdentityProvider';
 

@@ -1,4 +1,4 @@
-import { setMeProfile } from '@entities/me/model/meProfile';
+import { setMeProfile } from '@entities/me';
 import { getProfile } from '../api/getProfile';
 
 /**

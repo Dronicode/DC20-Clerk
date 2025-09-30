@@ -1,6 +1,6 @@
 import { clearMeProfile } from '@entities/me';
-import { STORAGE_KEYS } from '@shared/config/storageKeys';
-import type { UserProfile } from '@shared/types/UserProfile';
+import { STORAGE_KEYS } from '@shared/config';
+import type { UserProfile } from '@shared/types';
 
 // Sends a GET request to /identity/profile using the provided token
 // Returns the user's profile if successful, or null on failure
