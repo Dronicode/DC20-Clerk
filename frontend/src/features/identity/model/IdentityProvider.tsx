@@ -1,6 +1,7 @@
-import { clearMeProfile } from '@entities/me';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
+import { clearMeProfile } from '@entities/me';
 import { onStorageChange } from '@shared/lib';
+import { registerLoginStateSetter } from './authSync';
 import { STORAGE_KEYS } from '@shared/config';
 
 type AuthContextType = {
@@ -22,6 +23,8 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
     if (accessToken) {
       setIsLoggedIn(true);
     }
+
+    registerLoginStateSetter(setIsLoggedIn);
 
     const unsubscribe = onStorageChange((key, _, newValue) => {
       if (key !== STORAGE_KEYS.accessToken) return;

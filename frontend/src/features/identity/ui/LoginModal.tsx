@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { setMeProfile } from '@entities/me';
 import { getProfile, loginUser } from '..';
-import type { UserProfile } from '@shared/types';
+import { setMeProfile } from '@entities/me';
 import { STORAGE_KEYS } from '@shared/config';
+import { updateLoginState } from '../model/authSync';
+import type { UserProfile } from '@shared/types';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       const profile: UserProfile | null = await getProfile();
       if (!profile) throw new Error('Failed to load profile');
       setMeProfile(profile);
+      updateLoginState(true);
       onLoginSuccess();
     } catch (err) {
       console.error('[LOGIN] Failed:', err);
