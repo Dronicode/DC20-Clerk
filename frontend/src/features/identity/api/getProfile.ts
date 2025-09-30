@@ -19,7 +19,7 @@ export async function getProfile(): Promise<UserProfile | null> {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log('[PROFILE] response: ', response);
+    console.log('[PROFILE] response: %s', response);
 
     if (response.status === 401) {
       localStorage.removeItem(STORAGE_KEYS.accessToken);

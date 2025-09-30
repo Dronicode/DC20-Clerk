@@ -1,5 +1,5 @@
 import { clearMeProfile } from '@entities/me/model/meProfile';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { cacheProfile } from './cacheProfile';
 import { onStorageChange } from '@shared/lib/storageListener';
 import { STORAGE_KEYS } from '@shared/config/storageKeys';
@@ -19,13 +19,16 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const contextValue = useMemo(() => {
+    return { isLoggedIn, logout };
+  }, [isLoggedIn]);
+
   useEffect(() => {
     const accessToken = localStorage.getItem(STORAGE_KEYS.accessToken);
     if (accessToken) {
       setIsLoggedIn(true);
       cacheProfile();
     }
-    setIsLoading(false);
 
     const unsubscribe = onStorageChange((key, _, newValue) => {
       if (key !== STORAGE_KEYS.accessToken) return;
@@ -37,6 +40,7 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
       cacheProfile();
     });
 
+    setIsLoading(false);
     return unsubscribe;
   }, []);
 
@@ -48,8 +52,6 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
 
   if (isLoading) return null;
   return (
-    <AuthContext.Provider value={{ isLoggedIn, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
