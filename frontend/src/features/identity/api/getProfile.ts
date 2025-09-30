@@ -1,10 +1,11 @@
+import { STORAGE_KEYS } from '@shared/config/storageKeys';
 import type { UserProfile } from '@shared/types/UserProfile';
 
 // Sends a GET request to /identity/profile using the provided token
 // Returns the user's email if successful, or null on failure
 export async function getProfile(): Promise<UserProfile | null> {
   try {
-    const accessToken = localStorage.getItem('access_token');
+    const accessToken = localStorage.getItem(STORAGE_KEYS.accessToken);
     if (!accessToken) {
       console.warn('[PROFILE] No access token available');
       return null;

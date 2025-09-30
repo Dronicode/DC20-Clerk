@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { setMeProfile } from '@entities/me';
 import { getProfile, loginUser } from '../api';
 import type { UserProfile } from '@shared/types/UserProfile';
+import { STORAGE_KEYS } from '@shared/config/storageKeys';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
     try {
       const { access_token } = await loginUser(email, password);
-      localStorage.setItem('access_token', access_token);
+      localStorage.setItem(STORAGE_KEYS.accessToken, access_token);
 
       const profile: UserProfile | null = await getProfile();
       if (!profile) throw new Error('Failed to load profile');
