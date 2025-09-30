@@ -1,6 +1,6 @@
 // features/identity/model/useAuth.ts
 import { useContext } from 'react';
-import { AuthContext } from './AuthProvider';
+import { AuthContext } from './IdentityProvider';
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

@@ -1,3 +1,3 @@
-import { AuthProvider as IdentityAuthProvider } from '@features/identity';
+import { IdentityProvider } from '@features/identity';
 
-export const AuthProvider = IdentityAuthProvider;
+export const AuthProvider = IdentityProvider;
