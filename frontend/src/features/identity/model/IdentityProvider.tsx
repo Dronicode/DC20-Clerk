@@ -17,6 +17,7 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const accessToken = localStorage.getItem(STORAGE_KEYS.accessToken);
@@ -24,6 +25,7 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoggedIn(true);
       cacheProfile();
     }
+    setIsLoading(false);
 
     const unsubscribe = onStorageChange((key, _, newValue) => {
       if (key !== STORAGE_KEYS.accessToken) return;
@@ -44,6 +46,7 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
     clearMeProfile();
   };
 
+  if (isLoading) return null;
   return (
     <AuthContext.Provider value={{ isLoggedIn, logout }}>
       {children}
