@@ -1,8 +1,13 @@
 import React, { createContext, useEffect, useMemo, useState } from 'react';
-import { clearMeProfile } from '@entities/me';
+import {
+  clearMeProfile,
+  getMeProfile,
+  hydrateMeProfileFromSession,
+} from '@entities/me';
+import { STORAGE_KEYS } from '@shared/config';
 import { onStorageChange } from '@shared/lib';
 import { registerLoginStateSetter } from './authSync';
-import { STORAGE_KEYS } from '@shared/config';
+import { cacheProfile } from './cacheProfile';
 
 type AuthContextType = {
   isLoggedIn: boolean;
@@ -27,12 +32,20 @@ export const IdentityProvider: React.FC<{ children: React.ReactNode }> = ({
     registerLoginStateSetter(setIsLoggedIn);
 
     const unsubscribe = onStorageChange((key, _, newValue) => {
+      console.log('Storage Change Signalled');
       if (key !== STORAGE_KEYS.accessToken) return;
+      console.log('Storage Change Key true');
       if (newValue === null) {
+        console.log('Storage Change newval === null');
         logout();
         return;
       }
+      console.log('Storage Change newval not null');
       setIsLoggedIn(true);
+      hydrateMeProfileFromSession();
+      if (!getMeProfile()) {
+        cacheProfile();
+      }
     });
 
     return unsubscribe;
