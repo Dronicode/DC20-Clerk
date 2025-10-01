@@ -98,7 +98,7 @@ The Minimum Viable Product includes:
     - [x] Enable email/password authentication
   - [ ] Supabase client integration
     - [ ] Environment-based configuration (dev vs prod)
-    - [ ] Session persistence
+    - [x] Session persistence
   - [ ] Go backend service for authentication
     - [ ] /auth/ endpoints
   - [x] Frontend integration with backend service
