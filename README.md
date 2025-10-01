@@ -80,25 +80,34 @@ The Minimum Viable Product includes:
 
 ## Task checklist
 
-- [ ] Homepage with navigation
+- [ ] Site and pages
+  - [ ] Homepage
+  - [ ] Navbar
+  - [ ] Account page
+  - [ ] Character sheet page
 - [ ] User authentication
-  - [ ] Login modal
-  - [ ] Signup modal
-  - [ ] Auth links in navbar (Login / Register / Logout)
+  - [x] Login modal
+  - [x] Signup modal
+  - [x] Auth links in navbar (Login / Register / Logout)
+  - [ ] Username selection
+  - [ ] Username changing
+  - [ ] Email changing
+  - [ ] Password changing
+  - [ ] Account deletion
   - [x] Supabase project setup
     - [x] Enable email/password authentication
   - [ ] Supabase client integration
     - [ ] Environment-based configuration (dev vs prod)
-    - [ ] Session persistence
+    - [x] Session persistence
   - [ ] Go backend service for authentication
     - [ ] /auth/ endpoints
-  - [ ] Frontend integration with backend service
+  - [x] Frontend integration with backend service
 - [ ] Character Sheet builder
   - [ ] Create and manage characters
   - [ ] Export/ import/ share character sheets
   - [ ] Form fillable sheet with no calculations
 - [ ] Backend Gateway service
-  - [ ] Handles routing between frontend and auth service
+  - [x] Handles routing between frontend and auth service
   - [ ] Handles routing between frontend and character service
 - [ ] Production fully deployed and accessible
   - [x] Frontend deployed to GitHub Pages
@@ -108,7 +117,7 @@ The Minimum Viable Product includes:
 - [ ] Development environment fully functional
   - [x] Frontend running on localhost
   - [ ] Backend builds and runs in docker containers
-  - [ ] Database and auth hosted by Supabase, separate from prod instance
+  - [x] Database and auth hosted by Supabase, separate from prod instance
 
 ---
 
@@ -116,21 +125,23 @@ The Minimum Viable Product includes:
 
 The project is built using a modern full-stack architecture with a focus on test-driven development, containerization, and continuous deployment.
 
-| Layer                | Technology                                     |
-| -------------------- | ---------------------------------------------- |
-| **Frontend**         | React, TypeScript, Vite                        |
-| **Styling**          | TailwindCSS                                    |
-| **Routing**          | React Router                                   |
-| **State Mgmt**       | Redux                                          |
-| **Testing**          | Vitest (unit), Playwright (E2E)                |
-| **Backend**          | Go (Golang)                                    |
-| **Architecture**     | Microservices + API Gateway                    |
-| **Containerization** | Docker                                         |
-| **CI/CD**            | GitHub Actions + GitOps                        |
-| **Database + Auth**  | Supabase (PostgreSQL)                          |
-| **Dice Rolls**       | random.org API                                 |
-| **Deployment**       | GitHub Pages (frontend), Leapcell.io (backend) |
-| **API Docs**         | OpenAPI spec + Swagger UI                      |
+| Layer                    | Technology                                     |
+| ------------------------ | ---------------------------------------------- |
+| **Frontend**             | React, TypeScript, Vite                        |
+| **Styling**              | TailwindCSS                                    |
+| **Routing**              | React Router                                   |
+| **State Mgmt**           | Redux                                          |
+| **Testing**              | Vitest (unit), Playwright (E2E)                |
+| **Backend**              | Go (Golang)                                    |
+| **Architecture**         | Microservices + API Gateway                    |
+| **Frontend methodology** | Feature-Sliced Design                          |
+| **Containerization**     | Docker + Kubernetes                            |
+| **CI/CD**                | GitHub Actions + GitOps                        |
+| **Dice Rolls**           | random.org API                                 |
+| **Deployment**           | GitHub Pages (frontend), Leapcell.io (backend) |
+| **Database + Auth**      | Supabase (PostgreSQL)                          |
+| **API Testing**          | Postman                                        |
+| **API Docs**             | OpenAPI spec + Swagger UI                      |
 
 ---
 
