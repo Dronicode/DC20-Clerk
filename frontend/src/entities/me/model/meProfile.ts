@@ -1,7 +1,5 @@
-import type { UserProfile } from '@shared/types/UserProfile';
-import { useEffect, useState } from 'react';
-
-const SESSION_KEY = 'identity.profile';
+import { STORAGE_KEYS } from '@shared/config';
+import type { UserProfile } from '@shared/types';
 
 let profile: UserProfile | null = null;
 let listeners: ((profile: UserProfile | null) => void)[] = [];
@@ -11,7 +9,7 @@ let listeners: ((profile: UserProfile | null) => void)[] = [];
  */
 export const setMeProfile = (data: UserProfile) => {
   profile = data;
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  sessionStorage.setItem(STORAGE_KEYS.meProfile, JSON.stringify(data));
   listeners.forEach((fn) => fn(profile));
 };
 
@@ -20,7 +18,7 @@ export const setMeProfile = (data: UserProfile) => {
  */
 export const clearMeProfile = () => {
   profile = null;
-  sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(STORAGE_KEYS.meProfile);
   listeners.forEach((fn) => fn(profile));
 };
 
@@ -45,7 +43,7 @@ export const subscribeMeProfile = (
  * Hydrates profile from sessionStorage if available.
  */
 export const hydrateMeProfileFromSession = () => {
-  const cached = sessionStorage.getItem(SESSION_KEY);
+  const cached = sessionStorage.getItem(STORAGE_KEYS.meProfile);
   if (!cached) return;
 
   try {
@@ -54,18 +52,4 @@ export const hydrateMeProfileFromSession = () => {
   } catch (err) {
     console.warn('[meProfile] Failed to parse cached profile:', err);
   }
-};
-
-/**
- * React hook to access the current profile reactively.
- */
-export const useMeProfile = (): UserProfile | null => {
-  const [state, setState] = useState<UserProfile | null>(getMeProfile());
-
-  useEffect(() => {
-    const unsubscribe = subscribeMeProfile(setState);
-    return () => unsubscribe();
-  }, []);
-
-  return state;
 };

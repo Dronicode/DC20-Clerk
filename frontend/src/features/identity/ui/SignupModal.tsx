@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { setMeProfile } from '@entities/me';
-import { getProfile, registerUser } from '../api';
-import type { UserProfile } from '@shared/types/UserProfile';
+import { getProfile, registerUser } from '../';
+import type { UserProfile } from '@shared/types';
+import { STORAGE_KEYS } from '@shared/config';
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -31,7 +32,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({
 
     try {
       const { access_token } = await registerUser(email, password);
-      localStorage.setItem('access_token', access_token);
+      localStorage.setItem(STORAGE_KEYS.accessToken, access_token);
 
       const profile: UserProfile | null = await getProfile();
       if (!profile) throw new Error('Failed to load profile');
