@@ -61,7 +61,6 @@ func (p *JWKSProvider) refresh() error {
 	defer p.mu.Unlock()
 	p.jwks = &jwks
 	p.lastFetch = time.Now()
-	log.Printf("[JWKS] ← JWKS updated successfully")
 	return nil
 }
 
