@@ -3,6 +3,7 @@ package supabase
 import (
 	"context"
 	"dc20clerk/backend/identity/pkg/httpx"
+	"log"
 )
 
 // UserProfile represents the authenticated user's profile returned by Supabase.
@@ -21,5 +22,8 @@ func GetUserProfile(ctx context.Context, client httpx.HTTPPoster, accessToken st
 
 	profile := new(UserProfile)
 	err := httpx.DoJSONGet(ctx, client, url, headers, profile)
+	if err != nil {
+		log.Printf("[SUPABASE] ✖ GET %s: %v", url, err)
+	}
 	return profile, err
 }

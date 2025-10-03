@@ -9,10 +9,12 @@ import (
 )
 
 func main() {
-  godotenv.Load(".env")
+	godotenv.Load(".env")
 
-  r := router.NewRouter()
+	r := router.NewRouter()
 
-  log.Println("Gateway running on :8080")
-  http.ListenAndServe(":8080", r)
+	log.Println("[GATEWAY] ← Service ready on :8080")
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatalf("[GATEWAY] ✖ Server failed: %v", err)
+	}
 }

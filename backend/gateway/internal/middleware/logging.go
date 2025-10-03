@@ -5,10 +5,9 @@ import (
 	"net/http"
 )
 
-// LoggingMiddleware logs each incoming request.
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("[IDENTITY] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+		log.Printf("[GATEWAY] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 		next.ServeHTTP(w, r)
 	})
 }

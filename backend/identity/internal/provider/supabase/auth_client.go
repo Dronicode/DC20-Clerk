@@ -2,6 +2,7 @@ package supabase
 
 import (
 	"context"
+	"log"
 
 	"dc20clerk/backend/identity/pkg/httpx"
 )
@@ -24,7 +25,11 @@ func RegisterUser(ctx context.Context, client httpx.HTTPPoster, email, password 
 	}
 	headers := authHeaders("")
 
-	return httpx.DoJSONPost(ctx, client, url, headers, req, nil)
+	err := httpx.DoJSONPost(ctx, client, url, headers, req, nil)
+	if err != nil {
+		log.Printf("[SUPABASE] ✖ POST %s: %v", url, err)
+	}
+	return err
 }
 
 // LoginUser requests access and refresh tokens using Supabase REST /auth/v1/token with grant_type=password.

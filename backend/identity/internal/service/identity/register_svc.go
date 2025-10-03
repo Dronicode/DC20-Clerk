@@ -2,7 +2,7 @@ package identity
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"dc20clerk/backend/identity/internal/provider/supabase"
 	"dc20clerk/backend/identity/pkg/httpx"
@@ -20,7 +20,7 @@ type RegisterResponse struct {
 // RegisterUser validates input and delegates to Supabase
 func RegisterUser(ctx context.Context, req RegisterRequest) (*RegisterResponse, error) {
 	if req.Email == "" || req.Password == "" {
-		return nil, errors.New("[REGISTER] email and password required")
+		return nil, fmt.Errorf("[REGISTER] ✖ Email and password required")
 	}
 
 	err := supabase.RegisterUserFunc(ctx, httpx.DefaultHTTPClient, req.Email, req.Password)

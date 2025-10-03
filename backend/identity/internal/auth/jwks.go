@@ -6,7 +6,6 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -40,21 +39,21 @@ func FetchJWKS(jwksURL string) (*JWKS, error) {
 	client := &http.Client{Timeout: 5 * time.Second}
 	res, err := client.Get(jwksURL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch JWKS: %w", err)
+		return nil, fmt.Errorf("[JWKS] ✖ FetchJWKS: HTTP GET failed: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("JWKS fetch returned status %d", res.StatusCode)
+		return nil, fmt.Errorf("[JWKS] ✖ FetchJWKS: unexpected status %d", res.StatusCode)
 	}
 
 	var set JWKS
 	if err := json.NewDecoder(res.Body).Decode(&set); err != nil {
-		return nil, fmt.Errorf("failed to decode JWKS: %w", err)
+		return nil, fmt.Errorf("[JWKS] ✖ FetchJWKS: JSON decode failed: %w", err)
 	}
 
 	if len(set.Keys) == 0 {
-		return nil, errors.New("JWKS contains no keys")
+		return nil, fmt.Errorf("[JWKS] ✖ FetchJWKS: no keys found")
 	}
 
 	return &set, nil
@@ -67,7 +66,7 @@ func FindJWKByKeyID(jwks *JWKS, kid string) (*JWK, error) {
 			return &key, nil
 		}
 	}
-	return nil, fmt.Errorf("no matching key found for kid: %s", kid)
+	return nil, fmt.Errorf("[JWKS] ✖ FindJWKByKeyID: no match for kid=%s", kid)
 }
 
 // ConvertJWKToPublicKey converts a JWK to a usable RSA or EC public key.
@@ -78,7 +77,7 @@ func ConvertJWKToPublicKey(jwk JWK) (interface{}, error) {
 	case "EC":
 		return ConvertJWKToECPublicKey(jwk)
 	default:
-		return nil, fmt.Errorf("unsupported key type: %s", jwk.Kty)
+		return nil, fmt.Errorf("[JWKS] ✖ ConvertJWKToPublicKey: unsupported key type %s", jwk.Kty)
 	}
 }
 
@@ -86,40 +85,37 @@ func ConvertJWKToRSAPublicKey(jwk JWK) (*rsa.PublicKey, error) {
 	// Decode the base64url-encoded modulus (n)
 	nBytes, err := base64.RawURLEncoding.DecodeString(jwk.N)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode modulus: %w", err)
+		return nil, fmt.Errorf("[JWKS] ✖ RSA decode modulus: %w", err)
 	}
-	n := new(big.Int).SetBytes(nBytes)
 
 	// Decode the base64url-encoded exponent (e)
 	eBytes, err := base64.RawURLEncoding.DecodeString(jwk.E)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode exponent: %w", err)
+		return nil, fmt.Errorf("[JWKS] ✖ RSA decode exponent: %w", err)
 	}
 	e := new(big.Int).SetBytes(eBytes).Int64()
 
-	// Construct the rsa.PublicKey
-	pubKey := &rsa.PublicKey{
-		N: n,
+	// Construct and return the rsa.PublicKey
+	return &rsa.PublicKey{
+		N: new(big.Int).SetBytes(nBytes),
 		E: int(e),
-	}
-
-	return pubKey, nil
+	}, nil
 }
 
 func ConvertJWKToECPublicKey(jwk JWK) (*ecdsa.PublicKey, error) {
 	// Supabase uses P-256 for ES256 tokens
 	if jwk.Crv != "P-256" {
-		return nil, fmt.Errorf("unsupported curve: %s", jwk.Crv)
+		return nil, fmt.Errorf("[JWKS] ✖ EC unsupported curve: %s", jwk.Crv)
 	}
 
 	// Decode base64url-encoded X and Y coordinates
 	xBytes, err := base64.RawURLEncoding.DecodeString(jwk.X)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode X coordinate: %w", err)
+		return nil, fmt.Errorf("[JWKS] ✖ EC decode X: %w", err)
 	}
 	yBytes, err := base64.RawURLEncoding.DecodeString(jwk.Y)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode Y coordinate: %w", err)
+		return nil, fmt.Errorf("[JWKS] ✖ EC decode Y: %w", err)
 	}
 
 	// Convert to big.Int for elliptic curve math

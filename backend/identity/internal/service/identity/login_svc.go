@@ -20,7 +20,7 @@ type LoginResponse struct {
 
 func LoginUser(ctx context.Context, req LoginRequest) (*LoginResponse, error) {
 	if req.Email == "" || req.Password == "" {
-		return nil, errors.New("[LOGIN] email and password required")
+		return nil, errors.New("[LOGIN] ✖ Email and password required")
 	}
 
 	token, err := supabase.LoginUserFunc(ctx, httpx.DefaultHTTPClient, req.Email, req.Password)
