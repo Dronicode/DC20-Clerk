@@ -1,7 +1,8 @@
 FROM golang:1.25 AS dev
 WORKDIR /app
 COPY . .
-CMD ["go", "run", "./cmd/main.go"]
+RUN go install github.com/air-verse/air@latest
+CMD ["air", "-c", "air.toml"]
 
 FROM golang:1.25 AS build
 WORKDIR /app
