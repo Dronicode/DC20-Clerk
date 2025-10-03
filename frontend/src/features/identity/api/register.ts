@@ -2,7 +2,7 @@ export async function registerUser(
   email: string,
   password: string,
 ): Promise<{ access_token: string }> {
-  const res = await fetch('/identity/register', {
+  const res = await fetch('/api/identity/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),

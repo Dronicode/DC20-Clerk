@@ -13,7 +13,7 @@ export async function getProfile(): Promise<UserProfile | null> {
     }
 
     console.log('[PROFILE] get /identity/profile using token: %s', accessToken);
-    const response = await fetch('/identity/profile', {
+    const response = await fetch('/api/identity/profile', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,

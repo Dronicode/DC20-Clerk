@@ -18,11 +18,11 @@ func NewRouter(jwks *auth.JWKSProvider) http.Handler {
 	r.Use(middleware.LoggingMiddleware)
 
 	// Auth-protected routes
-	r.Handle("/identity/profile", middleware.JWTMiddleware(jwks)(http.HandlerFunc(handler.ProfileHandler))).Methods("GET")
+	r.Handle("/profile", middleware.JWTMiddleware(jwks)(http.HandlerFunc(handler.ProfileHandler))).Methods("GET")
 
 	// Public routes
-	r.HandleFunc("/identity/login", handler.Login).Methods("POST")
-	r.HandleFunc("/identity/register", handler.Register).Methods("POST")
+	r.HandleFunc("/login", handler.Login).Methods("POST")
+	r.HandleFunc("/register", handler.Register).Methods("POST")
 
 	return r
 }
