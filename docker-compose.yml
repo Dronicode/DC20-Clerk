@@ -1,5 +1,5 @@
 services:
-  gateway:
+  gateway-service:
     build:
       context: ./backend/gateway
       target: ${BUILD_TARGET}
@@ -15,7 +15,7 @@ services:
     networks:
       - dc20clerk-net
 
-  identity:
+  identity-service:
     build:
       context: ./backend/identity
       target: ${BUILD_TARGET}
@@ -30,7 +30,7 @@ services:
     networks:
       - dc20clerk-net
     depends_on:
-      - gateway
+      - gateway-service
 
   frontend:
     build:
@@ -39,6 +39,8 @@ services:
     command: /bin/sh -c "if [ \"$APP_MODE\" = \"dev\" ]; then npm run dev; else npm run build && serve -s build; fi"
     environment:
       - APP_MODE=${APP_MODE}
+    env_file:
+      - ./frontend/.env
     volumes:
       - ./frontend:/app
     ports:
@@ -46,7 +48,7 @@ services:
     networks:
       - dc20clerk-net
     depends_on:
-      - gateway
+      - gateway-service
 
 networks:
   dc20clerk-net:
