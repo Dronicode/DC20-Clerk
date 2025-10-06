@@ -43,6 +43,7 @@ go.work
 ### dotenv ###
 *.env
 .env-*
+config.json
 
 ### VisualStudioCode ###
 .vscode/*

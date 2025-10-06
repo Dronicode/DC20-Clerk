@@ -1,0 +1,5 @@
+{
+  "gateway.IDENTITY_URL": "http://identity-service:8081",
+  "identity.SUPABASE_URL": "https://abc.supabase.co/",
+  "identity.SUPABASE_SECRET_KEY": "sb_secret_xyz"
+}
