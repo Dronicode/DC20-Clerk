@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log"
 	"net/http"
 
 	"dc20clerk/backend/identity/internal/auth"
@@ -12,17 +13,24 @@ import (
 
 // NewRouter sets up all routes and middleware.
 func NewRouter(jwks *auth.JWKSProvider) http.Handler {
+	log.Println("[IDENTITY] → Initializing router")
+
 	r := mux.NewRouter()
-
-	// Global middleware
 	r.Use(middleware.LoggingMiddleware)
+	log.Println("[IDENTITY] → Logging middleware attached")
 
+	log.Println("[IDENTITY] → Creating routes")
 	// Auth-protected routes
-	r.Handle("/identity/profile", middleware.JWTMiddleware(jwks)(http.HandlerFunc(handler.ProfileHandler))).Methods("GET")
+	r.Handle("/profile", middleware.JWTMiddleware(jwks)(http.HandlerFunc(handler.ProfileHandler))).Methods("GET")
+	log.Println("[IDENTITY] → Protected route: GET /profile")
 
 	// Public routes
-	r.HandleFunc("/identity/login", handler.Login).Methods("POST")
-	r.HandleFunc("/identity/register", handler.Register).Methods("POST")
+	r.HandleFunc("/login", handler.Login).Methods("POST")
+	log.Println("[IDENTITY] → Public route: POST /login")
 
+	r.HandleFunc("/register", handler.Register).Methods("POST")
+	log.Println("[IDENTITY] → Public route: POST /register")
+
+	log.Println("[IDENTITY] ← Router setup complete")
 	return r
 }

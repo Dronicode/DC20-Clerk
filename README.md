@@ -80,12 +80,12 @@ The Minimum Viable Product includes:
 
 ## Task checklist
 
-- [ ] Site and pages
+- [ ] Frontend
   - [ ] Homepage
   - [ ] Navbar
   - [ ] Account page
   - [ ] Character sheet page
-- [ ] User authentication
+- [ ] Identity service
   - [x] Login modal
   - [x] Signup modal
   - [x] Auth links in navbar (Login / Register / Logout)
@@ -96,18 +96,15 @@ The Minimum Viable Product includes:
   - [ ] Account deletion
   - [x] Supabase project setup
     - [x] Enable email/password authentication
-  - [ ] Supabase client integration
-    - [ ] Environment-based configuration (dev vs prod)
+  - [x] Supabase client integration
+    - [x] Environment-based configuration (dev vs prod)
     - [x] Session persistence
-  - [ ] Go backend service for authentication
-    - [ ] /auth/ endpoints
-  - [x] Frontend integration with backend service
-- [ ] Character Sheet builder
+- [ ] Character service
   - [ ] Create and manage characters
   - [ ] Export/ import/ share character sheets
   - [ ] Form fillable sheet with no calculations
-- [ ] Backend Gateway service
-  - [x] Handles routing between frontend and auth service
+- [ ] Gateway service
+  - [x] Handles routing between frontend and identity service
   - [ ] Handles routing between frontend and character service
 - [ ] Production fully deployed and accessible
   - [x] Frontend deployed to GitHub Pages
@@ -116,7 +113,8 @@ The Minimum Viable Product includes:
   - [x] Accessible and secure via custom domain
 - [ ] Development environment fully functional
   - [x] Frontend running on localhost
-  - [ ] Backend builds and runs in docker containers
+  - [x] Backend builds and runs in docker containers
+  - [ ] Kubernetes orchestration
   - [x] Database and auth hosted by Supabase, separate from prod instance
 
 ---

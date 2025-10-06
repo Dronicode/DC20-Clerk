@@ -1,44 +1,52 @@
 package proxy
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestProxyToIdentity(t *testing.T) {
-  // Simulate identity service
-  identity := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    w.WriteHeader(http.StatusOK)
-    w.Write([]byte("identity service reached"))
-  }))
-  defer identity.Close()
+	log.Println("[TEST] → Starting TestProxyToIdentity")
 
-  // Create proxy to identity
-  proxy := NewReverseProxy(identity.URL)
+	identity := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("identity service reached"))
+	}))
+	defer identity.Close()
 
-  // Simulate gateway request
-  req := httptest.NewRequest("POST", "/identity/login", nil)
-  w := httptest.NewRecorder()
+	proxy := NewReverseProxy(identity.URL)
 
-  proxy.ServeHTTP(w, req)
+	req := httptest.NewRequest("POST", "/identity/login", nil)
+	w := httptest.NewRecorder()
 
-  res := w.Result()
-  if res.StatusCode != http.StatusOK {
-    t.Errorf("Expected 200 OK, got %v", res.StatusCode)
-  }
+	proxy.ServeHTTP(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		t.Errorf("[TEST] ✖ Expected 200 OK, got %v", res.StatusCode)
+	} else {
+		log.Println("[TEST] ← Proxy forwarded successfully")
+	}
 }
 
 func TestProxyServiceUnavailable(t *testing.T) {
-  proxy := NewReverseProxy("http://localhost:9999") // no service here
+	log.Println("[TEST] → Starting TestProxyServiceUnavailable")
 
-  req := httptest.NewRequest("POST", "/identity/login", nil)
-  w := httptest.NewRecorder()
+	proxy := NewReverseProxy("http://localhost:9999")
 
-  proxy.ServeHTTP(w, req)
+	req := httptest.NewRequest("POST", "/identity/login", nil)
+	w := httptest.NewRecorder()
 
-  res := w.Result()
-  if res.StatusCode != http.StatusBadGateway {
-    t.Errorf("Expected 502 Bad Gateway, got %v", res.StatusCode)
-  }
+	proxy.ServeHTTP(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusBadGateway {
+		t.Errorf("[TEST] ✖ Expected 502 Bad Gateway, got %v", res.StatusCode)
+	} else {
+		log.Println("[TEST] ← Proxy correctly handled service unavailability")
+	}
 }

@@ -20,10 +20,10 @@ type ProfileResponse struct {
 // Returns a structured response or an error.
 func FetchUserProfile(ctx context.Context, accessToken string, userID string) (*ProfileResponse, error) {
 	if accessToken == "" {
-		return nil, errors.New("[PROFILE] missing access token")
+		return nil, errors.New("[PROFILE] ✖ Missing access token")
 	}
 	if userID == "" {
-		return nil, errors.New("[PROFILE] missing user ID")
+		return nil, errors.New("[PROFILE] ✖ Missing user ID")
 	}
 
 	profile, err := supabase.GetUserProfile(ctx, httpx.DefaultHTTPClient, accessToken)

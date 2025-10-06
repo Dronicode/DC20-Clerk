@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -18,9 +19,10 @@ type JWKSProvider struct {
 
 // NewJWKSProvider initializes the provider and fetches JWKS from the given URL.
 func NewJWKSProvider(jwksURL string) *JWKSProvider {
+	log.Printf("[IDENTITY] → Initializing JWKS provider: %s", jwksURL)
 	p := &JWKSProvider{jwksURL: jwksURL}
 	if err := p.refresh(); err != nil {
-		panic(fmt.Sprintf("failed to fetch JWKS: %v", err))
+		log.Fatalf("[JWKS] ✖ Initial fetch failed: %v", err)
 	}
 	return p
 }
@@ -34,15 +36,25 @@ func (p *JWKSProvider) Get() *JWKS {
 
 // refresh fetches and updates the JWKS from the remote URL.
 func (p *JWKSProvider) refresh() error {
+	log.Printf("[JWKS] → Fetching JWKS from %s", p.jwksURL)
+
 	resp, err := http.Get(p.jwksURL)
 	if err != nil {
-		return fmt.Errorf("failed to fetch JWKS: %w", err)
+		return fmt.Errorf("[JWKS] ✖ HTTP GET failed: %w", err)
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("[JWKS] ✖ Unexpected status code: %d", resp.StatusCode)
+	}
+
 	var jwks JWKS
 	if err := json.NewDecoder(resp.Body).Decode(&jwks); err != nil {
-		return fmt.Errorf("failed to decode JWKS: %w", err)
+		return fmt.Errorf("[JWKS] ✖ JSON decode failed: %w", err)
+	}
+
+	if len(jwks.Keys) == 0 {
+		return fmt.Errorf("[JWKS] ✖ No keys found in JWKS")
 	}
 
 	p.mu.Lock()
@@ -59,9 +71,9 @@ func (p *JWKSProvider) StartAutoRefresh(interval time.Duration) {
 		for {
 			time.Sleep(interval)
 			if err := p.refresh(); err != nil {
-				fmt.Printf("[JWKS] Auto-refresh failed: %v\n", err)
+				log.Printf("[JWKS] ✖ Auto-refresh failed: %v", err)
 			} else {
-				fmt.Println("[JWKS] JWKS refreshed successfully")
+				log.Printf("[JWKS] ← JWKS auto-refreshed")
 			}
 		}
 	}()

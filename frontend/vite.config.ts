@@ -18,14 +18,11 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0',
+    port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/identity': {
-        target: 'http://localhost:8081',
+        target: process.env.VITE_API_URL,
         changeOrigin: true,
         secure: false,
       },

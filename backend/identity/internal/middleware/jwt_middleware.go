@@ -16,23 +16,21 @@ import (
 func JWTMiddleware(jwksProvider *auth.JWKSProvider) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log.Println("[AUTH] AuthMiddleware triggered")
+			log.Printf("[AUTH] → %s %s", r.Method, r.URL.Path)
 
 			// Extract token from Authorization header
 			authHeader := r.Header.Get("Authorization")
-			log.Printf("[AUTH] AuthHeader: %s", authHeader)
 			if !strings.HasPrefix(authHeader, "Bearer ") {
-				log.Println("[AUTH] Missing or malformed header")
+				log.Printf("[AUTH] ✖ Missing or malformed Authorization header")
 				http.Error(w, "missing or invalid Authorization header", http.StatusUnauthorized)
 				return
 			}
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-			log.Println("[AUTH] Extracted token:", tokenString)
 
 			// Validate token
 			token, err := auth.ValidateToken(tokenString, jwksProvider.Get())
 			if err != nil {
-				log.Printf("[AUTH] Token validation failed: %v\n", err)
+				log.Printf("[AUTH] ✖ Token validation failed: %v", err)
 				http.Error(w, "invalid token", http.StatusUnauthorized)
 				return
 			}
@@ -41,12 +39,13 @@ func JWTMiddleware(jwksProvider *auth.JWKSProvider) func(http.Handler) http.Hand
 			claims, ok := token.Claims.(jwt.MapClaims)
 			sub, okSub := claims["sub"].(string)
 			if !ok || !okSub || sub == "" {
+				log.Printf("[AUTH] ✖ Missing sub claim in token")
 				http.Error(w, "missing sub claim", http.StatusUnauthorized)
 				return
 			}
 
-			log.Println("[AUTH] Authenticated user ID:", sub)
 			// Inject user ID into context
+			log.Printf("[AUTH] ← Authenticated user ID: %s", sub)
 			ctx := context.WithValue(r.Context(), UserIDKey, sub)
 			ctx = context.WithValue(ctx, AccessTokenKey, tokenString)
 			next.ServeHTTP(w, r.WithContext(ctx))

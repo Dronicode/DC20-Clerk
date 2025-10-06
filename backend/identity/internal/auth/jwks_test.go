@@ -9,12 +9,15 @@ import (
 
 func TestFetchJWKS(t *testing.T) {
 	jwksURL := util.Env("SUPABASE_URL") + "auth/v1/.well-known/jwks.json"
-	log.Printf("JWKS URL: %s", jwksURL)
+	log.Printf("[TEST] → Fetching JWKS from %s", jwksURL)
+
 	keySet, err := auth.FetchJWKS(jwksURL)
 	if err != nil {
-		t.Fatalf("Failed to fetch JWKS: %v", err)
+		t.Fatalf("[TEST] ✖ FetchJWKS failed: %v", err)
 	}
 	if len(keySet.Keys) == 0 {
-		t.Fatal("JWKS returned no keys")
+		t.Fatal("[TEST] ✖ JWKS returned no keys")
 	}
+
+	log.Printf("[TEST] ← JWKS fetch successful: %d keys", len(keySet.Keys))
 }

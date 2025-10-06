@@ -13,7 +13,7 @@ import (
 
 // ProfileHandler returns basic info about the authenticated user.
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("[PROFILE] ProfileHandler invoked")
+	log.Printf("[IDENTITY] → %s %s", r.Method, r.URL.Path)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
@@ -21,7 +21,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	// Extract user ID from context
 	userID, ok := middleware.GetUserID(r)
 	if !ok || userID == "" {
-		log.Println("[PROFILE] Missing user ID in context")
+		log.Printf("[IDENTITY] ✖ Missing user ID in context")
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -29,17 +29,19 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	accessToken, ok := r.Context().Value(middleware.AccessTokenKey).(string)
 	if !ok || accessToken == "" {
+		log.Printf("[IDENTITY] ✖ Missing access token in context")
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 	resp, err := identity.FetchUserProfile(ctx, accessToken, userID)
 	if err != nil {
-		log.Printf("[PROFILE] Error fetching profile: %v", err)
+		log.Printf("[IDENTITY] ✖ Profile fetch failed: %v", err)
 		http.Error(w, "failed to fetch profile", http.StatusInternalServerError)
 		return
 	}
 
 	// Forward response to frontend
+	log.Printf("[IDENTITY] ← 200 %s", r.URL.Path)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 }

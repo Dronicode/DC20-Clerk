@@ -29,6 +29,7 @@ func doJSONRequest(
 	// Construct the HTTP request bound to caller's context
 	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
+		log.Printf("[REST] ✖ %s %s: request creation failed: %v", method, url, err)
 		return err
 	}
 
@@ -43,26 +44,28 @@ func doJSONRequest(
 	}
 
 	// Log outbound request
-	log.Printf("[%s] %s with headers: %v", method, url, headers)
+	log.Printf("[REST] → %s %s", method, url)
 
 	// Send the request using the injected or default client
 	res, err := client.Do(req)
 	if err != nil {
-		log.Printf("%s request error: %v", method, err)
+		log.Printf("[REST] ✖ %s %s: request failed: %v", method, url, err)
 		return err
 	}
-	log.Printf("Response status: %d", res.StatusCode)
-
 	// Ensure response body is drained and closed to reuse connections
 	defer drainBody(res.Body)
+
+	log.Printf("[REST] ← %d %s", res.StatusCode, url)
 
 	// If response status is not OK or Created, extract error message from body
 	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
 		var buf bytes.Buffer
 		_, _ = io.Copy(&buf, res.Body)
 		if buf.Len() > 0 {
+			log.Printf("[REST] ✖ %s %s: error response: %s", method, url, buf.String())
 			return errors.New(buf.String())
 		}
+		log.Printf("[REST] ✖ %s %s: status error: %s", method, url, res.Status)
 		return errors.New(res.Status)
 	}
 
@@ -82,6 +85,7 @@ func DoJSONPost(
 	// Marshal request body into JSON bytes
 	b, err := json.Marshal(v)
 	if err != nil {
+		log.Printf("[REST] ✖ POST %s: JSON marshal failed: %v", url, err)
 		return err
 	}
 
