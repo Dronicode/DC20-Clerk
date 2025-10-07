@@ -1,3 +1,5 @@
+// loader.go provides generic config loading logic.
+// It reads config.json from a fixed path, filters by prefix, and decodes into typed structs.
 package config
 
 import (
@@ -8,28 +10,46 @@ import (
 )
 
 // LoadConfig reads config.json and filters keys by prefix (e.g. "gateway.")
-func loadConfig(path string, prefix string) (map[string]string, error) {
-	data, err := os.ReadFile(path)
+func loadConfig[T any](prefix string) T {
+	path := resolveConfigPath()
+
+	raw, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
+		panic(fmt.Errorf("[Config] ✖ Failed to read config file: %w", err))
 	}
 
-	var raw map[string]string
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return nil, fmt.Errorf("invalid config format: %w", err)
+	var all map[string]string
+	if err := json.Unmarshal(raw, &all); err != nil {
+		panic(fmt.Errorf("[Config] ✖ Failed to parse config: %w", err))
 	}
 
 	filtered := make(map[string]string)
-	for k, v := range raw {
+	for k, v := range all {
 		if strings.HasPrefix(k, prefix) {
-			trimmed := strings.TrimPrefix(k, prefix)
-			filtered[trimmed] = v
+			filtered[strings.TrimPrefix(k, prefix)] = v
 		}
 	}
 
-	if len(filtered) == 0 {
-		return nil, fmt.Errorf("no config keys found for prefix: %s", prefix)
+	// Marshal filtered map back to JSON and decode into typed struct
+	buf, _ := json.Marshal(filtered)
+	var cfg T
+	if err := json.Unmarshal(buf, &cfg); err != nil {
+		panic(fmt.Errorf("[Config] ✖ Failed to decode typed config: %w", err))
 	}
 
-	return filtered, nil
+	return cfg
+}
+
+func resolveConfigPath() string {
+	// Prefer container path
+	if _, err := os.Stat("/app/config.json"); err == nil {
+		return "/app/config.json"
+	}
+
+	// Fallback for local dev (from gateway/, identity/, etc.)
+	if _, err := os.Stat("../config.json"); err == nil {
+		return "../config.json"
+	}
+
+	panic("[Config] ✖ config.json not found in /app/ or ../")
 }

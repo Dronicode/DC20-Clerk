@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"dc20clerk/common/config"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -18,7 +19,9 @@ type JWKSProvider struct {
 }
 
 // NewJWKSProvider initializes the provider and fetches JWKS from the given URL.
-func NewJWKSProvider(jwksURL string) *JWKSProvider {
+func NewJWKSProvider() *JWKSProvider {
+	cfg := config.LoadIdentityConfig()
+	jwksURL := cfg.SupabaseURL + "auth/v1/.well-known/jwks.json"
 	log.Printf("[IDENTITY] → Initializing JWKS provider: %s", jwksURL)
 	p := &JWKSProvider{jwksURL: jwksURL}
 	if err := p.refresh(); err != nil {

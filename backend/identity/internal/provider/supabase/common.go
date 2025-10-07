@@ -1,8 +1,10 @@
 package supabase
 
 import (
-	"dc20clerk/backend/identity/pkg/util"
+	"dc20clerk/common/config"
 )
+
+var cfg = config.LoadIdentityConfig()
 
 // authURL constructs a full Supabase auth endpoint URL.
 //
@@ -16,7 +18,7 @@ import (
 //
 //	authURL("signup") → "https://xyz.supabase.co/auth/v1/signup"
 func authURL(path string) string {
-	return util.Env("SUPABASE_URL") + "auth/v1/" + path
+	return cfg.SupabaseURL + "auth/v1/" + path
 }
 
 // authHeaders returns the required headers for Supabase auth requests.
@@ -36,12 +38,12 @@ func authURL(path string) string {
 //	authHeaders("user-token") → Authorization: Bearer user-token
 //	authHeaders("")           → Authorization: Bearer <SUPABASE_SECRET_KEY>
 func authHeaders(accessToken string) map[string]string {
-	token := util.Env("SUPABASE_SECRET_KEY")
+	token := cfg.SupabaseSecretKey
 	if accessToken != "" {
 		token = accessToken
 	}
 	return map[string]string{
-		"apikey":        util.Env("SUPABASE_SECRET_KEY"),
+		"apikey":        cfg.SupabaseSecretKey,
 		"Authorization": "Bearer " + token,
 	}
 }

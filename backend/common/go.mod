@@ -1,4 +1,4 @@
-module github.com/Dronicode/DC20-Clerk/common
+module dc20clerk/common
 
 go 1.25.1
 

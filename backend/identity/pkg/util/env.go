@@ -10,6 +10,7 @@ import (
 
 var loadOnce sync.Once
 
+// TODO DEPRECATED in favor of configs, remove when they definitey fully work.
 func Env(key string) string {
 	loadOnce.Do(func() {
 		if err := godotenv.Load(".env"); err != nil {

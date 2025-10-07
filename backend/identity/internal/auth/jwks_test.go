@@ -2,13 +2,14 @@ package auth_test
 
 import (
 	"dc20clerk/backend/identity/internal/auth"
-	"dc20clerk/backend/identity/pkg/util"
+	"dc20clerk/common/config"
 	"log"
 	"testing"
 )
 
 func TestFetchJWKS(t *testing.T) {
-	jwksURL := util.Env("SUPABASE_URL") + "auth/v1/.well-known/jwks.json"
+	cfg := config.LoadIdentityConfig()
+	jwksURL := cfg.SupabaseURL + "auth/v1/.well-known/jwks.json"
 	log.Printf("[TEST] → Fetching JWKS from %s", jwksURL)
 
 	keySet, err := auth.FetchJWKS(jwksURL)
