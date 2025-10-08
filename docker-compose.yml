@@ -1,15 +1,14 @@
 services:
   gateway-service:
     build:
-      context: ./backend/gateway
+      context: ./backend
+      dockerfile: gateway/Dockerfile
       target: ${BUILD_TARGET}
     environment:
       - APP_MODE=${APP_MODE}
-    env_file:
-      - ./backend/gateway/.env
     volumes:
+      - ./backend/config.json:/app/config.json:ro
       - ./backend/gateway:/app
-      - /app/node_modules
     ports:
       - "8080:8080"
     networks:
@@ -17,13 +16,13 @@ services:
 
   identity-service:
     build:
-      context: ./backend/identity
+      context: ./backend
+      dockerfile: identity/Dockerfile
       target: ${BUILD_TARGET}
     environment:
       - APP_MODE=${APP_MODE}
-    env_file:
-      - ./backend/identity/.env
     volumes:
+      - ./backend/config.json:/app/config.json:ro
       - ./backend/identity:/app
     ports:
       - "8081:8081"

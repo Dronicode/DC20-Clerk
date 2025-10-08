@@ -1,11 +1,11 @@
 root = "."
-tmp_dir = "tmp"
+tmp_dir = ".air"
 
 [build]
-cmd = "go build -o tmp/main ./cmd/main.go"
-bin = "tmp/main"
+cmd = "go build -o .air/main ./cmd/main.go"
+bin = ".air/main"
 delay = 1000
-exclude_dir = ["vendor", "tmp"]
+exclude_dir = ["vendor", ".air"]
 
 [log]
 color = true
