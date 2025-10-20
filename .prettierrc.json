@@ -1,0 +1,10 @@
+{
+  "overrides": [
+    {
+      "files": "deployment/**/*.{yaml,yaml.tpl,yaml.gotmpl}",
+      "options": {
+        "bracketSpacing": false
+      }
+    }
+  ]
+}
